@@ -4,7 +4,7 @@
 
 A **console-based Library Management System built with C++**, created as a practical Mid-Course Project to apply core programming fundamentals in one complete system.
 
-The project focuses on building a real-world-style application **without Object-Oriented Programming or File Handling**, keeping the implementation centered on the programming concepts covered at the fundamentals level.
+The project focuses on building a real-world style application **without Object-Oriented Programming or File Handling**, keeping the implementation centered on the programming concepts covered at the fundamentals level.
 
 ---
 
@@ -162,23 +162,25 @@ The browser demo follows the same console-style idea so visitors can experience 
 
 ## 🖥️ Application Screenshots
 
-Screenshots of the original C++ console application will be displayed here.
-
 ### Library Introduction
 
 ![Library Introduction](screenshots/Library_Intro.png)
+
+### Library Capacity
+
+![Library Capacity](screenshots/Library_Capacity.png)
 
 ### Main Menu
 
 ![Main Menu](screenshots/Main_Menu.png)
 
-### Book Operations
+### Adding a Book
 
-![Book Operations](screenshots/Book_Operations.png)
+![Adding a Book](screenshots/Add_Book.png)
 
-### Book Information
+### Listing All Books
 
-![Book Information](screenshots/Book_Info.png)
+![Listing All Books](screenshots/List_Books.png)
 
 ---
 
