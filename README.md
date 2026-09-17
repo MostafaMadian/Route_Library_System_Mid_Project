@@ -4,7 +4,7 @@
 
 A **console-based Library Management System built with C++**, created as a practical Mid-Course Project to apply core programming fundamentals in one complete system.
 
-The project focuses on building a real-world style application **without Object-Oriented Programming or File Handling**, keeping the implementation centered on the programming concepts covered at the fundamentals level.
+The project focuses on building a real-world-style application **without Object-Oriented Programming or File Handling**, keeping the implementation centered on the programming concepts covered at the fundamentals level.
 
 ---
 
@@ -12,10 +12,14 @@ The project focuses on building a real-world style application **without Object-
 
 [**🌐 Open Live Demo**](https://mostafamadian.github.io/Route_Library_System_Mid_Project/)
 
-[**💻 View C++ Source Code**](./C%2B%2B-Source/)
-
 > The Live Demo is a browser-based simulation of the original C++ console application.  
 > It follows the same general workflow and is provided for demonstration purposes.
+
+## 💻 View C++ Source Code
+
+[**💻 View C++ Source Code**](./C%2B%2B-Source/)
+
+
 
 ---
 
