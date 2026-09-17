@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Route Library — Live Demo</title>
+<link rel="icon" type="image/png" href="route-favicon.png">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b1220;color:#e5e7eb;font-family:Consolas,Monaco,monospace}
+.app{max-width:1050px;margin:30px auto;padding:20px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{margin:0;font-size:25px}.badge{padding:6px 10px;border:1px solid #334155;border-radius:7px;font-size:12px}
+.terminal{background:#020617;border:1px solid #334155;border-radius:12px;box-shadow:0 18px 60px #0008;overflow:hidden}
+.bar{height:38px;background:#111827;display:flex;align-items:center;padding:0 13px;gap:7px}.dot{width:11px;height:11px;border-radius:50%;background:#475569}.title{margin-left:8px;color:#94a3b8;font-size:12px}
+.output{min-height:510px;max-height:64vh;overflow:auto;padding:25px;white-space:pre-wrap;line-height:1.55;font-size:15px}
+.inputrow{display:flex;border-top:1px solid #1e293b;padding:13px 18px}.prompt{color:#22c55e;margin-right:9px}.inputrow input{flex:1;background:transparent;border:0;outline:0;color:#f8fafc;font:inherit}
+.actions{display:flex;gap:10px;margin-top:14px}.btn{cursor:pointer;border:1px solid #334155;background:#111827;color:#e5e7eb;border-radius:7px;padding:9px 13px;font-family:inherit}.btn:hover{background:#1e293b}
+.hint{color:#94a3b8;font:13px system-ui,sans-serif;margin-top:12px}.error{color:#fca5a5}.ok{color:#86efac}.muted{color:#94a3b8}
+@media(max-width:700px){.app{margin:10px auto;padding:10px}.output{font-size:13px;padding:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><h1>Route Library — Live Demo</h1><span class="badge">Browser demo of the C++ project</span></div>
+  <div class="terminal">
+    <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="title">Route Library System</span></div>
+    <div id="out" class="output"></div>
+    <form id="form" class="inputrow"><span class="prompt">&gt;</span><input id="input" autocomplete="off" autofocus aria-label="Terminal input"></form>
+  </div>
+  <div class="actions"><button class="btn" id="reset">Reset demo data</button><button class="btn" id="clear">Clear screen</button></div>
+  <div class="hint">Demo data is stored only in this browser using localStorage. It is not a real library system.</div>
+</div>
+<script>
+const KEY="route_library_demo_v2";
+let books=[], capacity=0, nextBookId=1, state="capacity", selected=null;
+
+const out=document.getElementById("out"), input=document.getElementById("input"), form=document.getElementById("form");
+function save(){localStorage.setItem(KEY,JSON.stringify({books,capacity,nextBookId}))}
+function print(s="",cls=""){const d=document.createElement("div");d.className=cls;d.textContent=s;out.appendChild(d);out.scrollTop=out.scrollHeight}
+function capacityPrompt(){
+ state="capacity";
+ print("");
+ print("==========================================");
+ print("          ROUTE LIBRARY SYSTEM");
+ print("==========================================");
+ print("Enter the capacity of the library:");
+}
+function initializeLibrary(size){
+ capacity=size;
+ books=[];
+ nextBookId=1;
+ save();
+ print(`Library initialized with capacity: ${capacity}`,"ok");
+ menu();
+}
+function expandAll(){
+ capacity*=2;
+ print(`Library capacity reached. Expanding capacity to ${capacity}...`,"muted");
+ save();
+}
+function menu(){
+ state="menu"; selected=null;
+ print("");
+ print("==========================================");
+ print("          ROUTE LIBRARY SYSTEM");
+ print("==========================================");
+ print("1. Add Book");
+ print("2. Remove Book");
+ print("3. Update Book");
+ print("4. Borrow Book");
+ print("5. Return Book");
+ print("6. Display Book Info");
+ print("7. List All Books");
+ print("8. Exit");
+ print("");
+ print("Choose an option:");
+}
+function ask(text,next){state=next;print(text);input.focus()}
+function find(id){return books.find(b=>b.id===id)}
+function nextId(){return nextBookId}
+function list(){
+ print("");
+ print(`Library Capacity: ${capacity} | Books: ${books.length}`);
+ if(!books.length){print("No books found.","muted");return}
+ print("----------- ALL BOOKS -----------");
+ books.forEach(b=>print(`ID: ${b.id} | Title: ${b.title} | Author: ${b.author} | Price: ${b.price.toFixed(2)} | ${b.available?"Available":"Borrowed"}`));
+}
+function handle(v){
+ v=v.trim();
+ if(state==="capacity"){
+   let n=Number(v);
+   if(!Number.isInteger(n)||n<=0){print("Please enter a positive integer.","error");ask("Enter the capacity of the library:","capacity");return}
+   initializeLibrary(n); return;
+ }
+ if(state==="menu"){
+   if(v==="1"){ask("Enter book title:","addTitle");}
+   else if(v==="2"){ask("Enter book ID to remove:","remove");}
+   else if(v==="3"){ask("Enter book ID to update:","updateId");}
+   else if(v==="4"){ask("Enter book ID to borrow:","borrow");}
+   else if(v==="5"){ask("Enter book ID to return:","return");}
+   else if(v==="6"){ask("Enter book ID:","display");}
+   else if(v==="7"){list();menu();}
+   else if(v==="8"){print("Goodbye.","ok");state="done";}
+   else print("Invalid option.","error");
+   return;
+ }
+ if(state==="addTitle"){selected={title:v};ask("Enter author:","addAuthor");return}
+ if(state==="addAuthor"){selected.author=v;ask("Enter price:","addPrice");return}
+ if(state==="addPrice"){
+   let p=Number(v); if(!Number.isFinite(p)||p<0){print("Invalid price.","error");ask("Enter price:","addPrice");return}
+   if(books.length===capacity) expandAll();
+   books.push({id:nextBookId++,title:selected.title,author:selected.author,price:p,available:true});save();
+   print("the book is added successfully!","ok");menu();return;
+ }
+ if(["remove","borrow","return","display","updateId"].includes(state)){
+   let id=Number(v); if(!Number.isInteger(id)){print("Invalid ID.","error");ask("Enter a valid book ID:",""+state);return}
+   let b=find(id);
+   if(!b){print("Book not found.","error");menu();return}
+   if(state==="remove"){books=books.filter(x=>x.id!==id);save();print("Book removed successfully.","ok");menu();return}
+   if(state==="borrow"){if(!b.available)print("Book is already borrowed.","error");else{b.available=false;save();print("Book borrowed successfully.","ok")}menu();return}
+   if(state==="return"){if(b.available)print("Book is already available.","error");else{b.available=true;save();print("Book returned successfully.","ok")}menu();return}
+   if(state==="display"){print(`ID: ${b.id}\nTitle: ${b.title}\nAuthor: ${b.author}\nPrice: ${b.price.toFixed(2)}\nStatus: ${b.available?"Available":"Borrowed"}`);menu();return}
+   if(state==="updateId"){selected=b;ask("Enter new title:","updateTitle");return}
+ }
+ if(state==="updateTitle"){selected.title=v;ask("Enter new author:","updateAuthor");return}
+ if(state==="updateAuthor"){selected.author=v;ask("Enter new price:","updatePrice");return}
+ if(state==="updatePrice"){
+   let p=Number(v);if(!Number.isFinite(p)||p<0){print("Invalid price.","error");ask("Enter price:","updatePrice");return}
+   selected.price=p;save();print("Book updated successfully.","ok");menu();return;
+ }
+}
+form.addEventListener("submit",e=>{e.preventDefault();let v=input.value;input.value="";if(state==="done")return;print("> "+v);handle(v)});
+document.getElementById("reset").onclick=()=>{books=[];capacity=0;nextBookId=1;localStorage.removeItem(KEY);out.innerHTML="";capacityPrompt()};
+document.getElementById("clear").onclick=()=>{out.innerHTML="";menu()};
+capacityPrompt();
+</script>
+</body>
+</html>
